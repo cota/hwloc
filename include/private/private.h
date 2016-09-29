@@ -110,6 +110,8 @@ struct hwloc_topology {
      * see hwloc_alloc_or_fail which is convenient for that.  */
     void *(*alloc_membind)(hwloc_topology_t topology, size_t len, hwloc_const_nodeset_t nodeset, hwloc_membind_policy_t policy, int flags);
     int (*free_membind)(hwloc_topology_t topology, void *addr, size_t len);
+
+    int (*get_disallowed_resources)(hwloc_topology_t topology);
   } binding_hooks;
 
   struct hwloc_topology_support support;

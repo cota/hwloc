@@ -2618,6 +2618,12 @@ next_cpubackend:
     return -1;
   }
 
+  if (topology->binding_hooks.get_disallowed_resources && topology->is_thissystem) {
+    const char *env = getenv("HWLOC_APPLY_NATIVE_RESTRICTIONS");
+    if ((env && atoi(env))
+	|| (topology->flags & HWLOC_TOPOLOGY_FLAG_APPLY_NATIVE_RESTRICTIONS))
+      topology->binding_hooks.get_disallowed_resources(topology);
+  }
   hwloc_debug("%s", "\nPropagate disallowed cpus down and up\n");
   hwloc_bitmap_and(topology->levels[0][0]->allowed_cpuset, topology->levels[0][0]->allowed_cpuset, topology->levels[0][0]->cpuset);
   propagate_unused_cpuset(topology->levels[0][0], NULL);
@@ -2905,7 +2911,7 @@ hwloc_topology_set_flags (struct hwloc_topology *topology, unsigned long flags)
     return -1;
   }
 
-  if (flags & ~(HWLOC_TOPOLOGY_FLAG_WHOLE_SYSTEM|HWLOC_TOPOLOGY_FLAG_IS_THISSYSTEM)) {
+  if (flags & ~(HWLOC_TOPOLOGY_FLAG_WHOLE_SYSTEM|HWLOC_TOPOLOGY_FLAG_IS_THISSYSTEM|HWLOC_TOPOLOGY_FLAG_APPLY_NATIVE_RESTRICTIONS)) {
     errno = EINVAL;
     return -1;
   }
